@@ -1,22 +1,25 @@
+import csv
 import mysql.connector
 
+# Connexion à la base de données
+conn = mysql.connector.connect(
+    host="127.0.0.1",
+    user="root",
+    password="CmonrienDiogre#+",
+    database="db_reminder"
+)
+cursor = conn.cursor()
 
+# Lecture du CSV et insertion dans la table
+with open('classes.csv', newline='', encoding='utf-8') as csvfile:
+    reader = csv.DictReader(csvfile, delimiter=';')
+    for row in reader:
+        cursor.execute(
+            "INSERT INTO classes (nom, salle) VALUES (%s, %s)",
+            (row['Nom'], row['Salle'])
+        )
 
-def connect_db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="ton_user",
-        password="ton_password",
-        database="ta_base"
-    )
-
-def get_students():
-    db = connect_db()
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM eleves ORDER BY nom")
-    results = cursor.fetchall()
-    cursor.close()
-    db.close()
-    return results
-
-# Autres fonctions: ajouter, supprimer élève, etc.
+conn.commit()
+cursor.close()
+conn.close()
+print("Données insérées avec succès !")
